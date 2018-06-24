@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="{:config('admin_static')}/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="{:config('admin_static')}/css/page.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{:config('admin_static')}/js/jquery.js"></script>
+    <script type="text/javascript" src="{:config('admin_static')}/layer/layer.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $(".click").click(function() {
+            $(".tip").fadeIn(200);
+        });
+
+        $(".tiptop a").click(function() {
+            $(".tip").fadeOut(200);
+        });
+
+        $(".sure").click(function() {
+            $(".tip").fadeOut(100);
+        });
+
+        $(".cancel").click(function() {
+            $(".tip").fadeOut(100);
+        });
+
+    });
+    </script>
+    <style>
+        .rightinfo div span li{
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="place">
+        <span>位置：</span>
+        <ul class="placeul">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">订单列表</a></li>
+            <li><a href="#">订单内容</a></li>
+        </ul>
+    </div>
+    <div class="rightinfo">
+        <div class="tools">
+            <ul class="toolbar">
+                <li><span><img src="{:config('admin_static')}/images/t01.png" /></span>添加</li>
+                <li><span><img src="{:config('admin_static')}/images/t02.png" /></span>修改</li>
+                <li><span><img src="{:config('admin_static')}/images/t04.png" /></span>统计</li>
+            </ul>
+            <span>
+                <li><b style="font-size: 14px; margin-right: 10px;margin-left: 50px;">搜索:</b >
+                    <input type="text" id="keyword" placeholder="请输入收货人/收货地址/电话/订单号" class="dfinput">
+                </li>
+                <li style="margin-left: 20px"><input id="seachMessage" type="button" value="搜索" class="sure"/></li>
+            </span>
+        </div>
+
+        <table class="tablelist">
+            <thead>
+                <tr>
+                    <th>
+                        <input name="" type="checkbox" value="" id="checkAll" />
+                    </th>
+                    <th>订单号</th>
+                    <th>购买人</th>
+                    <th>收货人/收货地址</th>
+                    <th>电话/邮编</th>
+                    <th>总金额</th>
+                    <th>付款状态</th>
+                    <th>发货状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {include file="order/tbody"  /}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {$lists->render()}
+        </div>
+        <div class="tip">
+            <div class="tiptop"><span>提示信息</span>
+                <a></a>
+            </div>
+            <div class="tipinfo">
+                <span><img src="{:config('admin_static')}/images/ticon.png" /></span>
+                <div class="tipright">
+                    <p>是否确认对信息的修改 ？</p>
+                    <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+                </div>
+            </div>
+            <div class="tipbtn">
+                <input name="" type="button" class="sure" value="确定" />&nbsp;
+                <input name="" type="button" class="cancel" value="取消" />
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('.tablelist tbody tr:odd').addClass('odd');
+        //ajax无刷新分页,
+        $(".pagination").on('click','a',function (){
+            var href=$(this).attr('href');
+            var keyword=$("#keyword").val();
+            $.get(href,{'keyword':keyword},function(json){
+
+                if(keyword){
+                    var reg=new RegExp(keyword,'g');
+                    $(".pagination").html(json.page);
+                    $("tbody").html(json.tbody.replace(reg,"<span style='color: red;font-weight: bold'>"+keyword+"</span>"));
+                }else{
+                    $(".pagination").html(json.page);
+                    $("tbody").html(json.tbody);
+                }
+            },'json');
+            return false;
+        });
+        //发送ajax请求获取物流信息
+        $("tbody").on('click','.queryLogistics',function () {
+            var company=$(this).attr('company');
+            var number=$(this).attr('number');
+            $.get("{:url('admin/order/getLogistics')}",{'company':company,'number':number},function (text) {
+                layer.open({
+                    type: 2,
+                    title: '物流信息',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['50%', '80%'],
+                    content: text //iframe的url
+                });
+            },'text');
+        });
+        //ajax搜索
+        $("#seachMessage").click(function(){
+            var keyword=$("#keyword").val();
+            if(keyword){
+                $.get("{:url('admin/order/index')}",{'keyword':keyword},function (json) {
+                    console.log(keyword);
+                    var reg=new RegExp(keyword,'g');
+                    $(".pagination").html(json.page);
+                    $("tbody").html(json.tbody.replace(reg,"<span style='color: red;font-weight: bold'>"+keyword+"</span>"));
+                },'json');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="{:config('admin_static')}/css/style.css" rel="stylesheet" type="text/css"/>
+    <script language="JavaScript" src="{:config('admin_static')}/js/jquery.js"></script>
+    <style>
+        .active {
+            border-bottom: solid 3px #66c9f3;
+        }
+
+        .box th {
+            margin-left: 15px;
+        }
+
+        .box th, .box td {
+            border: 1px solid #ccc;
+        }
+
+        .box b {
+            color: blue;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .box .ul_f {
+            float: left;
+            padding-right: 15px;
+        }
+
+        .box .ul_f li {
+            margin-left: 15px
+        }
+
+        .box .son {
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">角色添加</a></li>
+    </ul>
+</div>
+<div class="formbody">
+    <div class="formtitle">
+        <span class="active">基本信息</span>
+    </div>
+    <form action="" method="post">
+        <ul class="forminfo">
+            <li>
+                <label>角色名称</label>
+                <input name="role_name" placeholder="请输入角色名称" type="text" class="dfinput"/>
+            </li>
+            <li>
+                <label>分配权限</label>
+                <table width="600px" border="1px" rules="all" class="box">
+                    <?php foreach($children[0] as $one_auth_id):?>
+                    <tr>
+                        <th><input type="checkbox" onclick="all_select(this)" value="<?php echo $one_auth_id ?>"
+                                   name="auth_id_list[]"><?php echo $auths[$one_auth_id]['auth_name'] ?></th>
+                        <td>
+                            <?php foreach($children[$one_auth_id] as $two_auth_id):?>
+                            <ul class="ul_f">
+                                <b><input onclick="all_select(this);up_select(this,'{$one_auth_id}')"
+                                          value='<?php echo $two_auth_id ?>' type="checkbox"
+                                          name="auth_id_list[]"><?php echo $auths[$two_auth_id]['auth_name'] ?></b>
+                                <ul>
+                                    <?php foreach($children[$two_auth_id]?:array() as $three_auth_id):?>
+                                    <li class="son"><input onclick="up_select(this,'{$two_auth_id}');"
+                                                           value="<?php echo $three_auth_id ?>" type="checkbox"
+                                                           name="auth_id_list[]"><?php echo $auths[$three_auth_id]['auth_name'] ?>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </ul>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </li>
+        </ul>
+        <li>
+            <label>&nbsp;</label>
+            <input name="" id="btnSubmit" type="submit" class="btn" value="确认保存"/>
+        </li>
+    </form>
+</div>
+</body>
+<script>
+    function all_select(obj) {
+        $(obj).parent().next().find('input').prop('checked', obj.checked);
+    }
+
+    function up_select(obj, ids) {
+        $("input[value='" + ids + "']").prop('checked', true);
+        var length = $(obj).parent().parent().find("input[type='checkbox']:checked").length;
+        if (length == 0) {
+            $(obj).parents("tr").find("th>input").prop("checked", false);
+        }
+    }
+</script>
+
+</html>

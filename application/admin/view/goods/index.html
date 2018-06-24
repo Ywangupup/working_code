@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="{:config('admin_static')}/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="{:config('admin_static')}/css/page.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{:config('admin_static')}/js/jquery.js"></script>
+    <script type="text/javascript" src="{:config('admin_static')}/layer/layer.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $(".click").click(function() {
+            $(".tip").fadeIn(200);
+        });
+
+        $(".tiptop a").click(function() {
+            $(".tip").fadeOut(200);
+        });
+
+        $(".sure").click(function() {
+            $(".tip").fadeOut(100);
+        });
+
+        $(".cancel").click(function() {
+            $(".tip").fadeOut(100);
+        });
+
+    });
+    </script>
+</head>
+
+<body>
+    <div class="place">
+        <span>位置：</span>
+        <ul class="placeul">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">商品列表</a></li>
+            <li><a href="#">基本内容</a></li>
+        </ul>
+    </div>
+    <div class="rightinfo">
+        <div class="tools">
+            <ul class="toolbar">
+                <li><span><img src="{:config('admin_static')}/images/t01.png" /></span>添加</li>
+                <li><span><img src="{:config('admin_static')}/images/t02.png" /></span>修改</li>
+                <li><span><img src="{:config('admin_static')}/images/t03.png" /></span>删除</li>
+                <li><span><img src="{:config('admin_static')}/images/t04.png" /></span>统计</li>
+            </ul>
+        </div>
+        <table class="tablelist">
+            <thead>
+                <tr>
+                    <th>
+                        <input name="" type="checkbox" value="" id="checkAll" />
+                    </th>
+                    <th>商品名称</th>
+                    <th>商品价格</th>
+                    <th>商品库存</th>
+                    <th>商品图片</th>
+                    <th>是否回收</th>
+                    <th>是否上架</th>
+                    <th>是否新品</th>
+                    <th>是否热卖</th>
+                    <th>是否推荐</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {volist name="lists" id="list"}
+                <tr>
+                    <td>
+                        <input name="" type="checkbox" value="" />
+                    </td>
+                    <td>{$list['goods_name']}</td>
+                    <td>{$list['goods_price']}</td>
+                    <td>{$list['goods_number']}</td>
+                    <td id="img" >
+                        <?php $thumbs=json_decode($list['goods_thumb']); ?>
+                        <?php if(is_array($thumbs)):?>
+                            <?php foreach($thumbs as $thumb): ?>
+                                <img src="/upload/<?php echo $thumb; ?>"  alt="">
+                            <?php endforeach; ?>
+                        <?php endif;?>
+                    </td>
+                    <td><img src="{:config('admin_static')}/images/{$list['is_delete']?'yes':'no'}.gif" alt=""></td>
+                    <td><img src="{:config('admin_static')}/images/{$list['is_sale']?'yes':'no'}.gif" alt=""></td>
+                    <td><img src="{:config('admin_static')}/images/{$list['is_new']?'yes':'no'}.gif" alt=""></td>
+                    <td><img src="{:config('admin_static')}/images/{$list['is_best']?'yes':'no'}.gif" alt=""></td>
+                    <td><img src="{:config('admin_static')}/images/{$list['is_hot']?'yes':'no'}.gif" alt=""></td>
+                    <td><a href="{:url('admin/goods/upd',['goods_id'=>$list['goods_id']])}" class="tablelink">|编辑|</a>
+                    </td>
+                </tr>
+            {/volist}
+            </tbody>
+        </table>
+        <div class="pagination">
+        </div>
+
+    </div>
+    <script type="text/javascript">
+        $('.tablelist tbody tr:odd').addClass('odd');
+
+        $("#img>img").click(function (){
+            var src=$(this).attr('src');
+            layer.open({
+                type: 1,
+                title: false,
+                anim: 5,
+                fixed:false,
+                closeBtn: 1,
+                shadeClose: true,
+                skin: 'yourclass',
+                maxWidth: 350,
+                maxHeight:350,
+                content: "<img src='"+src.replace('min_','middle_')+"'>"
+            });
+        });
+    </script>
+</body>
+
+</html>
